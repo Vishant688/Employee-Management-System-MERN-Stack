@@ -6,7 +6,7 @@ const FailedTask = ({data}) => {
         
         <div className='flex justify-between items-center'>
             <h3 className='bg-red-700  text-sm px-3 py-1 rounded-xl '>{data.category}</h3>
-            <h4 className='text-sm'>{data.taskData}</h4>
+            <h4 className='text-sm'>{data.taskDate}</h4>
         </div>
         <h2 className='mt-5 text-2xl font-xl'>{data.taskTitle}</h2>
         <p className='text-sm mt-2'>

@@ -1,66 +1,173 @@
 import React from 'react'
+import api from '../../utilss/axios'
 
-const AcceptTask = ({ data, employeeData, updateEmployeeData }) => {
+const AcceptTask = ({
+  data,
+  employeeData,
+  updateEmployeeData
+}) => {
 
-  const completeHandler = () => {
+  // =========================
+  // COMPLETE TASK
+  // =========================
+  const completeHandler = async () => {
 
-    const updatedEmployee = {
-      ...employeeData,
+    try {
 
-      taskNumbers: {
-        ...employeeData.taskNumbers,
-        active: employeeData.taskNumbers.active - 1,
-        completed: employeeData.taskNumbers.completed + 1
-      },
+      const response = await api.put(
+        `${import.meta.env.VITE_API_URL}/api/tasks/${data._id}/complete`
+)
 
-      tasks: employeeData.tasks.map((task) => {
+      const updatedTask = response.data.task
 
-        if (task === data) {
+      const updatedTasks = employeeData.tasks.map((task) => {
+
+        if (task._id === updatedTask._id) {
+
           return {
             ...task,
-            active: false,
             newTask: false,
+            active: false,
             completed: true,
-            failed: false
+            failed: false,
+            status: "completed"
           }
+
         }
 
         return task
+
       })
+
+
+      const updatedEmployee = {
+
+        ...employeeData,
+
+        tasks: updatedTasks,
+
+        taskNumbers: {
+
+          ...employeeData.taskNumbers,
+
+          newTask: updatedTasks.filter(
+            (task) => task.newTask
+          ).length,
+
+          active: updatedTasks.filter(
+            (task) => task.active
+          ).length,
+
+          completed: updatedTasks.filter(
+            (task) => task.completed
+          ).length,
+
+          failed: updatedTasks.filter(
+            (task) => task.failed
+          ).length
+
+        }
+
+      }
+
+
+      updateEmployeeData(updatedEmployee)
+
+    } catch (error) {
+
+      console.log("COMPLETE ERROR:", error)
+      console.log("RESPONSE:", error.response?.data)
+      console.log("STATUS:", error.response?.status)
+
+      alert(
+        error.response?.data?.message ||
+        "Failed to complete task"
+      )
+
     }
 
-    updateEmployeeData(updatedEmployee)
   }
 
 
-  const failedHandler = () => {
+  // =========================
+  // FAILED TASK
+  // =========================
+  const failedHandler = async () => {
 
-    const updatedEmployee = {
-      ...employeeData,
+    try {
 
-      taskNumbers: {
-        ...employeeData.taskNumbers,
-        active: employeeData.taskNumbers.active - 1,
-        failed: employeeData.taskNumbers.failed + 1
-      },
+      const response = await api.put(
+        `${import.meta.env.VITE_API_URL}/api/tasks/${data._id}/fail`
+)
 
-      tasks: employeeData.tasks.map((task) => {
+      const updatedTask = response.data.task
 
-        if (task === data) {
+      const updatedTasks = employeeData.tasks.map((task) => {
+
+        if (task._id === updatedTask._id) {
+
           return {
             ...task,
-            active: false,
             newTask: false,
+            active: false,
             completed: false,
-            failed: true
+            failed: true,
+            status: "failed"
           }
+
         }
 
         return task
+
       })
+
+
+      const updatedEmployee = {
+
+        ...employeeData,
+
+        tasks: updatedTasks,
+
+        taskNumbers: {
+
+          ...employeeData.taskNumbers,
+
+          newTask: updatedTasks.filter(
+            (task) => task.newTask
+          ).length,
+
+          active: updatedTasks.filter(
+            (task) => task.active
+          ).length,
+
+          completed: updatedTasks.filter(
+            (task) => task.completed
+          ).length,
+
+          failed: updatedTasks.filter(
+            (task) => task.failed
+          ).length
+
+        }
+
+      }
+
+
+      updateEmployeeData(updatedEmployee)
+
+    } catch (error) {
+
+      console.log("FAILED ERROR:", error)
+      console.log("RESPONSE:", error.response?.data)
+      console.log("STATUS:", error.response?.status)
+
+      alert(
+        error.response?.data?.message ||
+        "Failed to mark task as failed"
+      )
+
     }
 
-    updateEmployeeData(updatedEmployee)
   }
 
 
@@ -95,7 +202,7 @@ const AcceptTask = ({ data, employeeData, updateEmployeeData }) => {
 
         <button
           onClick={completeHandler}
-          className= 'cursor-pointer bg-emerald-900 py-1 px-3 text-sm rounded-2xl'
+          className='cursor-pointer bg-emerald-900 py-1 px-3 text-sm rounded-2xl'
         >
           Mark as Completed
         </button>
@@ -111,7 +218,9 @@ const AcceptTask = ({ data, employeeData, updateEmployeeData }) => {
       </div>
 
     </div>
+
   )
+
 }
 
 export default AcceptTask

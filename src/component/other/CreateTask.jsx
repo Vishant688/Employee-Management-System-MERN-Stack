@@ -1,118 +1,235 @@
-import React, { useState } from 'react'
-import { AuthContext } from '../../context/AuthProvider'
-import { useContext } from 'react'
+import React, { useEffect, useState } from 'react'
+import api from '../../utilss/axios'
 
 const CreateTask = () => {
 
- const [userData,setUserData] = useContext(AuthContext)
+  const [employees, setEmployees] = useState([])
+  const [taskTitle, setTaskTitle] = useState('')
+  const [taskDescription, setTaskDescription] = useState('')
+  const [taskDate, setTaskDate] = useState('')
+  const [assignTo, setAssignTo] = useState('')
+  const [category, setCategory] = useState('')
 
-const [taskTitle, setTaskTitle] = useState('')
-const [taskDescription, settaskDescription] = useState('')
-const [taskDate, setTaskDate] = useState('')
-const [assignTo, setAssignTo] = useState('')
-const [category, setCategory] = useState('')
+  useEffect(() => {
 
-const [newTask, setNewTask] = useState({})
+    const fetchEmployees = async () => {
 
-  const submitHandler =(e)=>{
-  e.preventDefault()
+      try {
 
-   setNewTask({taskTitle,taskDescription,taskDate,category,active:false,newTask:true,failed:false,completed:false})
+        const response = await api.get(
+          `/api/auth/employees`
+        )
 
-   const data = userData
-   console.log(data)
+        setEmployees(response.data.employees)
 
-  data.forEach(function (elem) {
-    if (assignTo == elem.firstName) {
-     elem.tasks.push(newTask)
-     elem.taskNumbers.newTask = elem.taskNumbers.newTask+1
-  
+      } catch (error) {
+
+        console.log(
+          "EMPLOYEE FETCH ERROR:",
+          error
+        )
+
+      }
+
+    }
+
+    fetchEmployees()
+
+  }, [])
+
+  const submitHandler = async (e) => {
+
+    e.preventDefault()
+
+    try {
+
+      const employee = employees.find(
+        (elem) => elem.email === assignTo
+      )
+
+      if (!employee) {
+
+        alert("Please select an employee")
+        return
+
+      }
+
+      const response = await api.post(
+        `/api/tasks`,
+        {
+          taskTitle,
+          taskDescription,
+          taskDate,
+          category,
+          assignedTo: employee.email
+        }
+      )
+
+      console.log(
+        "Task created:",
+        response.data
+      )
+
+      alert("Task created successfully")
+
+      setTaskTitle('')
+      setTaskDescription('')
+      setTaskDate('')
+      setAssignTo('')
+      setCategory('')
+
+    } catch (error) {
+
+      console.log(
+        "CREATE TASK ERROR:",
+        error
+      )
+
+      console.log(
+        "RESPONSE:",
+        error.response?.data
+      )
+
+      alert(
+        error.response?.data?.message ||
+        "Failed to create task"
+      )
+
+    }
+
   }
-})
 
-setUserData(data)
-
-   setTaskTitle('')
-   setCategory('')
-   setAssignTo('')
-   settaskDescription('')
-   setTaskDate('')
-  }
   return (
-         <div className='p-5 bg-[#1c1c1c] mt-7 rounded'>
-        <form onSubmit={(e)=>{
-         submitHandler(e)
-        }}
-        className=' flex-wrap flex w-full bg-black items-start justify-between '>
+
+    <div className='p-5 bg-[#1c1c1c] mt-7 rounded'>
+
+      <form
+        onSubmit={submitHandler}
+        className='flex-wrap flex w-full bg-black items-start justify-between'
+      >
 
         <div className='w-1/2 p-3'>
-      
-            <div>
-            <h3 className='text-sm text-gray-300 mb-0.5'>Task Title</h3>
-            <input
 
+          <div>
+
+            <h3 className='text-sm text-gray-300 mb-0.5'>
+              Task Title
+            </h3>
+
+            <input
               value={taskTitle}
-              onChange={(e)=>{
-              setTaskTitle(e.target.value)
-              }}
+              onChange={(e) =>
+                setTaskTitle(e.target.value)
+              }
+              className='text-sm py-1 px-2 w-4/5 rounded outline-none bg-transparent border-[1px] border-gray-400'
+              type='text'
+              placeholder='Make a UI design'
+              required
+            />
 
-              className='text-sm py-1 px-2 w-4/5 rounded outline-none b g-transparent border-[1px] border-gray-400 ' type='text' placeholder='Make a UI design'/>
-            </div>
-            
-            <div>
-            <h3 className='text-sm text-gray-300 mb-0.5'>Date</h3>
-            <input 
+          </div>
 
-             value={taskDate}
-              onChange={(e)=>{
-              setTaskDate(e.target.value)
-              }}
+          <div>
 
-            className='text-sm py-1 px-2 w-4/5 rounded outline-none bg-transparent border-[1px] border-gray-400 ' type='date'/>
-            </div>
+            <h3 className='text-sm text-gray-300 mb-0.5'>
+              Date
+            </h3>
 
-            <div>
-            <h3 className='text-sm text-gray-300 mb-0.5'>Assign to</h3>
-            <input 
-
-             value={assignTo}
-             onChange={(e)=>{
-             setAssignTo(e.target.value)
-              }}
-
-            className='text-sm py-1 px-2 w-4/5 rounded outline-none bg-transparent border-[1px] border-gray-400  ' type='text' placeholder='employee name'/>
-            </div>
-
-            <div>
-            <h3 className='text-sm text-gray-300 mb-0.5'>Category</h3>
             <input
+              value={taskDate}
+              onChange={(e) =>
+                setTaskDate(e.target.value)
+              }
+              className='text-sm py-1 px-2 w-4/5 rounded outline-none bg-transparent border-[1px] border-gray-400'
+              type='date'
+              required
+            />
 
-             value={category}
-              onChange={(e)=>{
-              setCategory(e.target.value)
-              }}
+          </div>
 
-            className='text-sm py-1 px-2 w-4/5 rounded outline-none bg-transparent border-[1px] border-gray-400 ' type='text' placeholder='design,dev,etc'/>
-            </div>
+          <div>
 
-            </div>
+            <h3 className='text-sm text-gray-300 mb-0.5'>
+              Assign to
+            </h3>
 
-          <div className='w-2/5 flex flex-col items-start p-3'>
-            <h3 className='text-sm text-green-600 mb-0.5'>Description</h3>
-            <textarea
-             value={taskDescription}
-              onChange={(e)=>{
-              settaskDescription(e.target.value)
-              }}
+            <select
+              value={assignTo}
+              onChange={(e) =>
+                setAssignTo(e.target.value)
+              }
+              className='text-sm py-1 px-2 w-4/5 rounded outline-none bg-transparent border-[1px] border-gray-400'
+              required
+            >
 
-            className='w-full h-44 text-sm py-2 px-2 rounded outline-none bg-transparent border-[1px] border-gray-400' name="" id="" cols='30' rowa='10'></textarea>
-        
+              <option value=''>
+                Select Employee
+              </option>
 
-            <button className='bg-emerald-500 py-3 hover:bg-emerald-600 px-5 rounded text-sm mt-4 w-full'>Create Task</button>
-              </div>
-        </form>
-      
-      </div>
+              {employees.map((employee) => (
+
+                <option
+                  key={employee._id}
+                  value={employee.email}
+                >
+                  {employee.firstName}
+                </option>
+
+              ))}
+
+            </select>
+
+          </div>
+
+          <div>
+
+            <h3 className='text-sm text-gray-300 mb-0.5'>
+              Category
+            </h3>
+
+            <input
+              value={category}
+              onChange={(e) =>
+                setCategory(e.target.value)
+              }
+              className='text-sm py-1 px-2 w-4/5 rounded outline-none bg-transparent border-[1px] border-gray-400'
+              type='text'
+              placeholder='design,dev,etc'
+              required
+            />
+
+          </div>
+
+        </div>
+
+        <div className='w-2/5 flex flex-col items-start p-3'>
+
+          <h3 className='text-sm text-green-600 mb-0.5'>
+            Description
+          </h3>
+
+          <textarea
+            value={taskDescription}
+            onChange={(e) =>
+              setTaskDescription(e.target.value)
+            }
+            className='w-full h-44 text-sm py-2 px-2 rounded outline-none bg-transparent border-[1px] border-gray-400'
+            required
+          />
+
+          <button
+            type='submit'
+            className='bg-emerald-500 hover:bg-emerald-600 py-3 px-5 rounded text-sm mt-4 w-full'
+          >
+            Create Task
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
   )
 }
 

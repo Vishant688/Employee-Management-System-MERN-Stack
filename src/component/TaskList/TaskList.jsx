@@ -15,7 +15,7 @@ const TaskList = ({data,updateEmployeeData}) => {
          }
 
          if(elem.newTask){
-          return <NewTask key={idx} data={elem} />
+          return <NewTask key={idx} data={elem}  employeeData={data} updateEmployeeData={updateEmployeeData}/>
          }
 
          if(elem.completed){
