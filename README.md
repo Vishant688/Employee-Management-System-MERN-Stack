@@ -1,16 +1,46 @@
-# React + Vite
+# Employee Management System - MERN Stack
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack task management app with two roles: Admin and Employee. Admins assign tasks to employees and track their status.
 
-Currently, two official plugins are available:
+**Live Demo:** https://employee-management-system-mern-sta-theta.vercel.app/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- Separate dashboards for Admin and Employee, with secure login
+- Admin selects an employee and assigns a task with a deadline
+- Employee is notified by email when a task is assigned
+- Employee logs in, views the task and accepts it; admin is notified on acceptance
+- Employee marks the task as completed before the deadline, or as failed
+- JWT authentication and role-based access control
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
 
-## Expanding the ESLint configuration
+- **Frontend:** React.js, Vite
+- **Backend:** Node.js, Express.js
+- **Database:** MongoDB (Mongoose)
+- **Auth:** JWT
+- **Deployment:** Vercel (frontend), Render (backend)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Run Locally
+
+1. Clone the repo
+   ```
+   git clone https://github.com/Vishant688/Employee-Management-System-MERN-Stack.git
+   cd Employee-Management-System-MERN-Stack
+   ```
+2. Start the backend
+   ```
+   cd Backend
+   npm install
+   npm start
+   ```
+3. Start the frontend (from the project root)
+   ```
+   npm install
+   npm run dev
+   ```
+4. Create a `.env` file in `Backend` with your MongoDB connection string and JWT secret.
+
+## Author
+
+Vishant Rawat - [LinkedIn](https://www.linkedin.com/in/vishant-rawat-4948b9292) | [GitHub](https://github.com/Vishant688)
